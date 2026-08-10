@@ -731,19 +731,30 @@ function applyFormData(data){
 }
 
 async function saveChanges(){
-  const json = JSON.stringify(collectFormData());
   try {
-    if (hasClaudeStorage()){
-      const result = await window.storage.set(STORAGE_KEY, json, false);
-      flashMsg(result ? 'Saved. This loads automatically next time you open this page here in Claude.' : 'Save failed — please try again.');
-      return;
+    const data = collectFormData();
+
+    flashMsg('Saving shared KPI data...');
+
+    const response = await fetch('/api/kpi', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        data: data,
+        updatedBy: data.preparedBy || 'Admissions Team'
+      })
+    });
+
+    const result = await response.json();
+
+    if (!response.ok) {
+      throw new Error(result.error || 'Unable to save KPI data');
     }
-    if (hasLocalStorage()){
-      localStorage.setItem(STORAGE_KEY, json);
-      flashMsg('Saved to this browser. This loads automatically next time you open this file in Chrome.');
-      return;
-    }
-    flashMsg('No storage available in this environment — changes won\'t persist after you close this page.');
+
+    flashMsg('✓ KPI data saved successfully for the whole team.');
+
   } catch (err) {
     flashMsg('Save failed: ' + err.message);
     console.error(err);
@@ -752,29 +763,51 @@ async function saveChanges(){
 
 async function loadSaved(silent){
   try {
-    if (hasClaudeStorage()){
-      const result = await window.storage.get(STORAGE_KEY, false);
-      if (result && result.value){
-        applyFormData(JSON.parse(result.value));
-        if(!silent) flashMsg('Loaded your last saved numbers.');
-        return true;
-      }
-      return false;
+    const response = await fetch('/api/kpi', {
+      method: 'GET',
+      headers: {
+        'Accept': 'application/json'
+      },
+      cache: 'no-store'
+    });
+
+    const result = await response.json();
+
+    if (!response.ok) {
+      throw new Error(result.error || 'Unable to load KPI data');
     }
-    if (hasLocalStorage()){
-      const raw = localStorage.getItem(STORAGE_KEY);
-      if (raw){
-        applyFormData(JSON.parse(raw));
-        if(!silent) flashMsg('Loaded your last saved numbers.');
-        return true;
+
+    if (result.data) {
+      applyFormData(result.data);
+
+      if (!silent) {
+        let message = '✓ Latest shared KPI data loaded.';
+
+        if (result.updated_by) {
+          message += ' Updated by ' + result.updated_by + '.';
+        }
+
+        flashMsg(message);
       }
-      return false;
+
+      return true;
     }
+
+    if (!silent) {
+      flashMsg('No shared KPI data has been saved yet.');
+    }
+
+    return false;
+
   } catch (err) {
-    // No saved data yet on first-ever use — this is expected, not an error to surface.
-    console.log('loadSaved: nothing saved yet', err.message);
+    console.error('Unable to load shared KPI data:', err);
+
+    if (!silent) {
+      flashMsg('Load failed: ' + err.message);
+    }
+
+    return false;
   }
-  return false;
 }
 
 document.getElementById('sheet').addEventListener('input', recalcAll);
