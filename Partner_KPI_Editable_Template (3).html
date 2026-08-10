@@ -1,0 +1,805 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>Partner KPI Template</title>
+<style>
+  * { box-sizing:border-box; margin:0; padding:0; }
+  body { font-family: Arial, Helvetica, sans-serif; color:#1F2A44; background:#9aa5b8; padding:18px; }
+
+  .sheet { background:#FFFFFF; width:1120px; margin:0 auto; box-shadow:0 4px 24px rgba(0,0,0,0.25); }
+
+  .toolbar { max-width:1120px; margin:0 auto 10px auto; display:flex; justify-content:space-between; align-items:center; }
+  .toolbar .hint { color:#EEF2F8; font-size:12px; }
+  .btn { background:#2E7D32; color:#fff; border:none; padding:9px 18px; font-size:13px; font-weight:bold; border-radius:4px; cursor:pointer; }
+  .btn:hover { background:#256428; }
+  .btn.secondary { background:#3C5A99; margin-right:8px; }
+  .btn.secondary:hover { background:#31497a; }
+
+  .header { background:#1F2A44; padding:16px 34px 10px 34px; }
+  .header h1 { color:#FFFFFF; font-size:18px; letter-spacing:0.3px; }
+  .subbar { background:#2E3E5C; padding:7px 34px; color:#C9A227; font-size:9.5px; font-weight:bold; display:flex; align-items:center; gap:6px; flex-wrap:wrap; }
+  .subbar input { background:#1c2740; color:#C9A227; border:1px solid #4a5a7a; font-size:9.5px; font-weight:bold; padding:2px 5px; border-radius:2px; font-family:inherit; }
+  .subbar input.date { width:110px; }
+  .subbar input.freetext { width:190px; }
+
+  .content { padding:12px 34px 8px 34px; }
+
+  .cards { width:100%; border-collapse:collapse; margin-bottom:10px; }
+  .cards td { width:16.66%; background:#EEF2F8; border:1px solid #D0D5DD; padding:7px 5px; text-align:center; vertical-align:top; }
+  .card-label { font-size:7.3px; font-weight:bold; color:#667085; letter-spacing:0.2px; text-transform:uppercase; }
+  .card-value { font-size:17px; font-weight:bold; color:#3C5A99; margin:4px 0 2px 0; }
+  .card-value.red { color:#C0392B; }
+  .card-value.green { color:#2E7D32; }
+  .card-value.amber { color:#B8860B; }
+  .card-sub { font-size:6.8px; color:#667085; }
+
+  .section-title { background:#3C5A99; color:#FFFFFF; font-size:10px; font-weight:bold; padding:5px 10px; margin-bottom:0; display:flex; justify-content:space-between; }
+  .section-title .days-note { font-weight:normal; opacity:0.9; }
+  .section-title input.daysinput { width:80px; font-size:9px; padding:1px 3px; border-radius:2px; border:1px solid #7f94c0; }
+
+  .row2 { width:100%; margin-bottom:10px; }
+  .row2 td { vertical-align:top; }
+  .ptable-col { width:70%; padding-right:12px; }
+  .chart-col { width:30%; }
+
+  table.partner { width:100%; border-collapse:collapse; }
+  table.partner th { background:#1F2A44; color:#FFFFFF; font-size:7.6px; padding:5px 4px; text-align:center; border:1px solid #1F2A44; }
+  table.partner td { font-size:8.4px; padding:5px 4px; border:1px solid #D0D5DD; text-align:right; }
+  table.partner td.name { text-align:left; font-weight:bold; }
+  table.partner tr.total td { background:#1F2A44; color:#FFFFFF; font-weight:bold; }
+
+  .status { display:inline-block; padding:2px 6px; border-radius:3px; font-size:7.6px; font-weight:bold; white-space:nowrap; }
+  .status.red { background:#FFCDD2; color:#B00020; }
+  .status.green { background:#C8E6C9; color:#2E7D32; }
+  .fillgreen { color:#2E7D32; font-weight:bold; }
+  .fillred { color:#B00020; font-weight:bold; }
+
+  .chart-box { border:1px solid #D0D5DD; padding:8px 10px 8px 10px; height:100%; }
+  .chart-title { font-size:9px; font-weight:bold; color:#1F2A44; margin-bottom:6px; }
+  .bar-row { margin-bottom:5px; }
+  .bar-label { font-size:7.6px; font-weight:bold; margin-bottom:1px; }
+  .bar-track { background:#EDEFF3; height:12px; width:100%; border-radius:2px; position:relative; }
+  .bar-fill { height:12px; border-radius:2px; transition:width 0.15s ease; }
+  .bar-pct { font-size:7px; font-weight:bold; float:right; margin-top:-12px; margin-right:4px; line-height:12px; }
+  .legend { font-size:6.3px; color:#8A93A6; margin-top:3px; }
+
+  table.detail { width:100%; border-collapse:collapse; }
+  table.detail th { background:#1F2A44; color:#FFFFFF; font-size:6.8px; padding:4px 2px; text-align:center; border:1px solid #1F2A44; line-height:8px;}
+  table.detail td { font-size:7.6px; padding:2.5px 2px; border:1px solid #D0D5DD; text-align:right; }
+  table.detail td.name { text-align:left; font-weight:bold; }
+  table.detail tr.subtotal td { background:#DCE3F0; font-weight:bold; }
+  table.detail tr.grand td { background:#1F2A44; color:#FFFFFF; font-weight:bold; }
+  .partner-band td { background:#3C5A99; color:#FFFFFF; font-weight:bold; font-size:8px; text-align:left; padding:3px 6px; }
+
+  .mo { display:inline-block; padding:1.5px 4px; border-radius:3px; font-size:6.6px; font-weight:bold; }
+  .mo.up { background:#C8E6C9; color:#2E7D32; }
+  .mo.down { background:#FFCDD2; color:#B00020; }
+  .mo.na { background:#EDEFF3; color:#8A93A6; }
+
+  /* editable inputs inside dense table */
+  table.detail input, table.detail select {
+    width:100%; border:1px solid #b9c2d6; background:#FBFCFE; font-size:7.6px; text-align:right;
+    padding:1.5px 1px; border-radius:2px; font-family:inherit; color:#1F2A44;
+  }
+  table.detail select { text-align:left; padding:1px; }
+  table.detail input:focus, table.detail select:focus { outline:2px solid #3C5A99; background:#fff; }
+  table.detail td.editable { background:#FFFDF3; }
+  input[type=number]::-webkit-inner-spin-button { opacity:0; }
+
+  .footer { margin:8px 34px 0 34px; font-size:6.5px; color:#8A93A6; border-top:1px solid #D0D5DD; padding-top:5px; line-height:9px; }
+  .footer-meta { margin:5px 34px 10px 34px; font-size:8px; color:#4B5670; font-weight:bold; display:flex; align-items:center; gap:6px; }
+  .footer-meta input { font-size:8px; font-weight:bold; color:#4B5670; border:1px solid #c7cede; border-radius:2px; padding:2px 5px; font-family:inherit; }
+
+  body.capturing .toolbar { display:none; }
+  body.capturing table.detail input, body.capturing table.detail select,
+  body.capturing .subbar input, body.capturing .footer-meta input, body.capturing .section-title input {
+    border:none !important; background:transparent !important; -webkit-appearance:none; appearance:none;
+  }
+  body.capturing table.detail td.editable { background:transparent !important; }
+  body.capturing .sheet { box-shadow:none; }
+  body.capturing { background:#fff !important; padding:0 !important; }
+
+  .status-msg { font-size:12px; color:#EEF2F8; margin-left:10px; }
+
+  @media print {
+    body { background:#fff; padding:0; }
+    .toolbar { display:none; }
+    .sheet { box-shadow:none; width:auto; }
+    table.detail input, table.detail select, .subbar input, .footer-meta input, .section-title input {
+      border:none !important; background:transparent !important; -webkit-appearance:none; appearance:none;
+    }
+    table.detail td.editable { background:transparent; }
+    @page { size: landscape; margin: 8mm; }
+  }
+</style>
+</head>
+<body>
+
+  <div class="toolbar">
+    <span class="hint">Edit any white/yellow field below — everything recalculates live.</span>
+    <span>
+      <button class="btn secondary" onclick="resetDefaults()">Reset to last week's data</button>
+      <button class="btn" onclick="saveChanges()">💾 Save changes</button>
+      <button class="btn secondary" onclick="downloadPDF()">🖶 Save as PDF</button>
+      <span class="status-msg" id="statusMsg"></span>
+    </span>
+  </div>
+
+  <div class="sheet" id="sheet">
+    <div class="header">
+      <h1>PARTNER RECRUITMENT PERFORMANCE — EXECUTIVE SUMMARY</h1>
+    </div>
+    <div class="subbar">
+      SEPTEMBER 2026 INTAKE &nbsp;·&nbsp; PREPARED FOR CEO &amp; DIRECTOR &nbsp;·&nbsp; DATA AS OF
+      <input class="date" type="date" id="asOfDate" value="2026-08-03">
+      <input class="freetext" type="text" id="updateTimeText" value="(10:30–10:45 AM update)">
+      &nbsp;·&nbsp; DEADLINE
+      <input class="date" type="date" id="deadlineDate" value="2026-09-10">
+    </div>
+
+    <div class="content">
+
+      <table class="cards">
+        <tr>
+          <td>
+            <div class="card-label">Total Confirmed</div>
+            <div class="card-value" id="kpi_confirmed">—</div>
+            <div class="card-sub">of <span id="kpi_target">—</span> target</div>
+          </td>
+          <td>
+            <div class="card-label">Overall Fill Rate</div>
+            <div class="card-value red" id="kpi_fill">—</div>
+            <div class="card-sub">vs 50% on-track benchmark</div>
+          </td>
+          <td>
+            <div class="card-label">Gap to Target</div>
+            <div class="card-value red" id="kpi_gap">—</div>
+            <div class="card-sub">places still required</div>
+          </td>
+          <td>
+            <div class="card-label">Pipeline Efficiency</div>
+            <div class="card-value" id="kpi_eff">—</div>
+            <div class="card-sub">confirmed ÷ worked pipeline</div>
+          </td>
+          <td>
+            <div class="card-label">Interview→PFF Passed</div>
+            <div class="card-value green" id="kpi_i2p">—</div>
+            <div class="card-sub">of interview-passed convert</div>
+          </td>
+          <td>
+            <div class="card-label">Days to Deadline</div>
+            <div class="card-value amber" id="kpi_days">—</div>
+            <div class="card-sub">calendar days remaining</div>
+          </td>
+        </tr>
+      </table>
+
+      <table class="row2">
+        <tr>
+          <td class="ptable-col">
+            <div class="section-title">PARTNER PERFORMANCE</div>
+            <table class="partner">
+              <tr>
+                <th style="text-align:left;">Partner</th>
+                <th>Confirmed</th><th>Target</th><th>Fill Rate</th><th>Gap</th>
+                <th>Pipeline Eff.</th><th>Proc. Days Left*</th><th>Req. Pace /Proc. Day*</th><th>Status</th>
+              </tr>
+              <tr>
+                <td class="name">University of Wolverhampton</td>
+                <td id="pp_wh_confirmed">—</td><td id="pp_wh_target">—</td><td id="pp_wh_fill">—</td><td id="pp_wh_gap">—</td>
+                <td id="pp_wh_eff">—</td><td id="pp_wh_pdays">—</td><td id="pp_wh_pace">—</td>
+                <td id="pp_wh_status">—</td>
+              </tr>
+              <tr>
+                <td class="name">Harper Adams University</td>
+                <td id="pp_ha_confirmed">—</td><td id="pp_ha_target">—</td><td id="pp_ha_fill">—</td><td id="pp_ha_gap">—</td>
+                <td id="pp_ha_eff">—</td><td id="pp_ha_pdays">—</td><td id="pp_ha_pace">—</td>
+                <td id="pp_ha_status">—</td>
+              </tr>
+              <tr>
+                <td class="name">University of Brighton</td>
+                <td id="pp_bg_confirmed">—</td><td id="pp_bg_target">—</td><td id="pp_bg_fill">—</td><td id="pp_bg_gap">—</td>
+                <td id="pp_bg_eff">—</td><td id="pp_bg_pdays">—</td><td id="pp_bg_pace">—</td>
+                <td id="pp_bg_status">—</td>
+              </tr>
+              <tr class="total">
+                <td class="name">ALL PARTNERS</td>
+                <td id="pp_all_confirmed">—</td><td id="pp_all_target">—</td><td id="pp_all_fill">—</td><td id="pp_all_gap">—</td>
+                <td id="pp_all_eff">—</td><td id="pp_all_pdays">—</td><td id="pp_all_pace">—</td>
+                <td id="pp_all_status">—</td>
+              </tr>
+            </table>
+          </td>
+          <td class="chart-col">
+            <div class="chart-box">
+              <div class="chart-title">FILL RATE BY PARTNER</div>
+              <div class="bar-row">
+                <div class="bar-label">Wolverhampton</div>
+                <div class="bar-track"><div class="bar-fill" id="bar_wh" style="width:0%; background:#B00020;"></div><div class="bar-pct" id="bar_wh_lbl">—</div></div>
+              </div>
+              <div class="bar-row">
+                <div class="bar-label">Harper Adams</div>
+                <div class="bar-track"><div class="bar-fill" id="bar_ha" style="width:0%; background:#B00020;"></div><div class="bar-pct" id="bar_ha_lbl">—</div></div>
+              </div>
+              <div class="bar-row">
+                <div class="bar-label">Brighton</div>
+                <div class="bar-track"><div class="bar-fill" id="bar_bg" style="width:0%; background:#B00020;"></div><div class="bar-pct" id="bar_bg_lbl">—</div></div>
+              </div>
+              <div class="bar-row">
+                <div class="bar-label">All Partners (blended)</div>
+                <div class="bar-track"><div class="bar-fill" id="bar_all" style="width:0%; background:#B00020;"></div><div class="bar-pct" id="bar_all_lbl">—</div></div>
+              </div>
+              <div class="legend">Green = On Track (≥50% of target) &nbsp;·&nbsp; Red = Needs Attention (&lt;50%)</div>
+            </div>
+          </td>
+        </tr>
+      </table>
+
+      <div class="section-title">COURSE-LEVEL DETAIL &amp; PIPELINE MOMENTUM</div>
+      <table class="detail" id="detailTable">
+        <tr>
+          <th style="width:10%; text-align:left;">Course</th>
+          <th style="width:3%;">S1</th><th style="width:3%;">S2</th><th style="width:3%;">S3</th>
+          <th style="width:3%;">S4</th><th style="width:3%;">S5</th><th style="width:3%;">S6</th>
+          <th style="width:4.5%;">Confirmed</th><th style="width:4.5%;">Interview Passed</th><th style="width:4%;">Target</th>
+          <th style="width:4%;">Fill Rate</th><th style="width:3.5%;">Gap</th>
+          <th style="width:3.5%;">Int. Failed</th><th style="width:3.5%;">PFF Failed</th><th style="width:3.5%;">PFF DNA</th>
+          <th style="width:4.5%;">Pipeline Eff.</th><th style="width:4.5%;">Int→PFF Pass%</th>
+          <th style="width:4%;">Net Enrolled</th>
+          <th style="width:3.5%;">Apps Jun</th><th style="width:3.5%;">Apps Jul</th><th style="width:5%;">Momentum</th>
+          <th style="width:5%;">Req. Pace/Proc.Day*</th><th style="width:6.5%;">Status</th>
+        </tr>
+
+        <tr class="partner-band"><td colspan="23">UNIVERSITY OF WOLVERHAMPTON &nbsp;(processing days: <input class="daysinput" style="display:inline;width:90px;background:#2c3e6b;color:#fff;border:1px solid #5a6d99;" id="wh_days" value="Mon,Wed,Sun"> — <span id="wh_pdays_label">—</span> remaining)</td></tr>
+
+        <!-- Health & Social Care -->
+        <tr data-course="wh0">
+          <td class="name">Health &amp; Social Care</td>
+          <td class="editable"><input type="number" id="wh0_s1" value="40"></td>
+          <td class="editable"><input type="number" id="wh0_s2" value="31"></td>
+          <td class="editable"><input type="number" id="wh0_s3" value="135"></td>
+          <td class="editable"><input type="number" id="wh0_s4" value="0"></td>
+          <td class="editable"><input type="number" id="wh0_s5" value="0"></td>
+          <td class="editable"><input type="number" id="wh0_s6" value="0"></td>
+          <td id="wh0_confirmed">—</td>
+          <td class="editable"><input type="number" id="wh0_ip" value="209"></td>
+          <td class="editable"><input type="number" id="wh0_target" value="330"></td>
+          <td id="wh0_fill">—</td>
+          <td id="wh0_gap">—</td>
+          <td class="editable"><input type="number" id="wh0_intf" value="46"></td>
+          <td class="editable"><input type="number" id="wh0_pff" value="35"></td>
+          <td class="editable"><input type="number" id="wh0_dna" value="7"></td>
+          <td id="wh0_eff">—</td>
+          <td id="wh0_i2p">—</td>
+          <td class="editable"><input type="number" id="wh0_net" value="202"></td>
+          <td class="editable"><input type="number" id="wh0_jun" value="102"></td>
+          <td class="editable"><input type="number" id="wh0_jul" value="81"></td>
+          <td class="editable">
+            <select id="wh0_mom"><option value="down" selected>DECEL.</option><option value="up">ACCEL.</option><option value="na">N/A</option></select>
+          </td>
+          <td id="wh0_pace">—</td>
+          <td id="wh0_status">—</td>
+        </tr>
+
+        <!-- Computing & IT -->
+        <tr data-course="wh1">
+          <td class="name">Computing &amp; IT</td>
+          <td class="editable"><input type="number" id="wh1_s1" value="18"></td>
+          <td class="editable"><input type="number" id="wh1_s2" value="23"></td>
+          <td class="editable"><input type="number" id="wh1_s3" value="52"></td>
+          <td class="editable"><input type="number" id="wh1_s4" value="0"></td>
+          <td class="editable"><input type="number" id="wh1_s5" value="0"></td>
+          <td class="editable"><input type="number" id="wh1_s6" value="0"></td>
+          <td id="wh1_confirmed">—</td>
+          <td class="editable"><input type="number" id="wh1_ip" value="97"></td>
+          <td class="editable"><input type="number" id="wh1_target" value="250"></td>
+          <td id="wh1_fill">—</td>
+          <td id="wh1_gap">—</td>
+          <td class="editable"><input type="number" id="wh1_intf" value="16"></td>
+          <td class="editable"><input type="number" id="wh1_pff" value="3"></td>
+          <td class="editable"><input type="number" id="wh1_dna" value="4"></td>
+          <td id="wh1_eff">—</td>
+          <td id="wh1_i2p">—</td>
+          <td class="editable"><input type="number" id="wh1_net" value="93"></td>
+          <td class="editable"><input type="number" id="wh1_jun" value="50"></td>
+          <td class="editable"><input type="number" id="wh1_jul" value="37"></td>
+          <td class="editable">
+            <select id="wh1_mom"><option value="down" selected>DECEL.</option><option value="up">ACCEL.</option><option value="na">N/A</option></select>
+          </td>
+          <td id="wh1_pace">—</td>
+          <td id="wh1_status">—</td>
+        </tr>
+
+        <!-- Business Management -->
+        <tr data-course="wh2">
+          <td class="name">Business Management</td>
+          <td class="editable"><input type="number" id="wh2_s1" value="16"></td>
+          <td class="editable"><input type="number" id="wh2_s2" value="20"></td>
+          <td class="editable"><input type="number" id="wh2_s3" value="49"></td>
+          <td class="editable"><input type="number" id="wh2_s4" value="0"></td>
+          <td class="editable"><input type="number" id="wh2_s5" value="0"></td>
+          <td class="editable"><input type="number" id="wh2_s6" value="0"></td>
+          <td id="wh2_confirmed">—</td>
+          <td class="editable"><input type="number" id="wh2_ip" value="88"></td>
+          <td class="editable"><input type="number" id="wh2_target" value="140"></td>
+          <td id="wh2_fill">—</td>
+          <td id="wh2_gap">—</td>
+          <td class="editable"><input type="number" id="wh2_intf" value="20"></td>
+          <td class="editable"><input type="number" id="wh2_pff" value="14"></td>
+          <td class="editable"><input type="number" id="wh2_dna" value="3"></td>
+          <td id="wh2_eff">—</td>
+          <td id="wh2_i2p">—</td>
+          <td class="editable"><input type="number" id="wh2_net" value="85"></td>
+          <td class="editable"><input type="number" id="wh2_jun" value="22"></td>
+          <td class="editable"><input type="number" id="wh2_jul" value="58"></td>
+          <td class="editable">
+            <select id="wh2_mom"><option value="down">DECEL.</option><option value="up" selected>ACCEL.</option><option value="na">N/A</option></select>
+          </td>
+          <td id="wh2_pace">—</td>
+          <td id="wh2_status">—</td>
+        </tr>
+
+        <!-- Digital Marketing -->
+        <tr data-course="wh3">
+          <td class="name">Digital Marketing</td>
+          <td class="editable"><input type="number" id="wh3_s1" value="4"></td>
+          <td class="editable"><input type="number" id="wh3_s2" value="17"></td>
+          <td class="editable"><input type="number" id="wh3_s3" value="16"></td>
+          <td class="editable"><input type="number" id="wh3_s4" value="0"></td>
+          <td class="editable"><input type="number" id="wh3_s5" value="0"></td>
+          <td class="editable"><input type="number" id="wh3_s6" value="0"></td>
+          <td id="wh3_confirmed">—</td>
+          <td class="editable"><input type="number" id="wh3_ip" value="41"></td>
+          <td class="editable"><input type="number" id="wh3_target" value="80"></td>
+          <td id="wh3_fill">—</td>
+          <td id="wh3_gap">—</td>
+          <td class="editable"><input type="number" id="wh3_intf" value="8"></td>
+          <td class="editable"><input type="number" id="wh3_pff" value="5"></td>
+          <td class="editable"><input type="number" id="wh3_dna" value="4"></td>
+          <td id="wh3_eff">—</td>
+          <td id="wh3_i2p">—</td>
+          <td class="editable"><input type="number" id="wh3_net" value="37"></td>
+          <td class="editable"><input type="number" id="wh3_jun" value="9"></td>
+          <td class="editable"><input type="number" id="wh3_jul" value="20"></td>
+          <td class="editable">
+            <select id="wh3_mom"><option value="down">DECEL.</option><option value="up" selected>ACCEL.</option><option value="na">N/A</option></select>
+          </td>
+          <td id="wh3_pace">—</td>
+          <td id="wh3_status">—</td>
+        </tr>
+
+        <tr class="subtotal">
+          <td class="name">WOLVERHAMPTON TOTAL</td>
+          <td id="wh_sub_s1">—</td><td id="wh_sub_s2">—</td><td id="wh_sub_s3">—</td>
+          <td id="wh_sub_s4">—</td><td id="wh_sub_s5">—</td><td id="wh_sub_s6">—</td>
+          <td id="wh_sub_confirmed">—</td><td id="wh_sub_ip">—</td><td id="wh_sub_target">—</td>
+          <td id="wh_sub_fill">—</td><td id="wh_sub_gap">—</td>
+          <td id="wh_sub_intf">—</td><td id="wh_sub_pff">—</td><td id="wh_sub_dna">—</td>
+          <td id="wh_sub_eff">—</td><td id="wh_sub_i2p">—</td>
+          <td id="wh_sub_net">—</td>
+          <td id="wh_sub_jun">—</td><td id="wh_sub_jul">—</td><td>N/A</td>
+          <td id="wh_sub_pace">—</td>
+          <td id="wh_sub_status">—</td>
+        </tr>
+
+        <tr class="partner-band"><td colspan="23">HARPER ADAMS UNIVERSITY &nbsp;(processing days: <input class="daysinput" style="display:inline;width:90px;background:#2c3e6b;color:#fff;border:1px solid #5a6d99;" id="ha_days" value="Tue,Sun"> — <span id="ha_pdays_label">—</span> remaining)</td></tr>
+
+        <tr data-course="ha0">
+          <td class="name">Digital Business Management</td>
+          <td class="editable"><input type="number" id="ha0_s1" value="13"></td>
+          <td class="editable"><input type="number" id="ha0_s2" value="13"></td>
+          <td class="editable"><input type="number" id="ha0_s3" value="17"></td>
+          <td class="editable"><input type="number" id="ha0_s4" value="0"></td>
+          <td class="editable"><input type="number" id="ha0_s5" value="0"></td>
+          <td class="editable"><input type="number" id="ha0_s6" value="0"></td>
+          <td id="ha0_confirmed">—</td>
+          <td class="editable"><input type="number" id="ha0_ip" value="45"></td>
+          <td class="editable"><input type="number" id="ha0_target" value="320"></td>
+          <td id="ha0_fill">—</td>
+          <td id="ha0_gap">—</td>
+          <td class="editable"><input type="number" id="ha0_intf" value="11"></td>
+          <td class="editable"><input type="number" id="ha0_pff" value="8"></td>
+          <td class="editable"><input type="number" id="ha0_dna" value="2"></td>
+          <td id="ha0_eff">—</td>
+          <td id="ha0_i2p">—</td>
+          <td class="editable"><input type="number" id="ha0_net" value="43"></td>
+          <td class="editable"><input type="number" id="ha0_jun" value="17"></td>
+          <td class="editable"><input type="number" id="ha0_jul" value="15"></td>
+          <td class="editable">
+            <select id="ha0_mom"><option value="down" selected>DECEL.</option><option value="up">ACCEL.</option><option value="na">N/A</option></select>
+          </td>
+          <td id="ha0_pace">—</td>
+          <td id="ha0_status">—</td>
+        </tr>
+
+        <tr class="partner-band"><td colspan="23">UNIVERSITY OF BRIGHTON &nbsp;(processing days: <input class="daysinput" style="display:inline;width:90px;background:#2c3e6b;color:#fff;border:1px solid #5a6d99;" id="bg_days" value="Thu"> — <span id="bg_pdays_label">—</span> remaining)</td></tr>
+
+        <tr data-course="bg0">
+          <td class="name">Games Development</td>
+          <td class="editable"><input type="number" id="bg0_s1" value="3"></td>
+          <td class="editable"><input type="number" id="bg0_s2" value="1"></td>
+          <td class="editable"><input type="number" id="bg0_s3" value="5"></td>
+          <td class="editable"><input type="number" id="bg0_s4" value="0"></td>
+          <td class="editable"><input type="number" id="bg0_s5" value="0"></td>
+          <td class="editable"><input type="number" id="bg0_s6" value="0"></td>
+          <td id="bg0_confirmed">—</td>
+          <td class="editable"><input type="number" id="bg0_ip" value="10"></td>
+          <td class="editable"><input type="number" id="bg0_target" value="200"></td>
+          <td id="bg0_fill">—</td>
+          <td id="bg0_gap">—</td>
+          <td class="editable"><input type="number" id="bg0_intf" value="0"></td>
+          <td class="editable"><input type="number" id="bg0_pff" value="0"></td>
+          <td class="editable"><input type="number" id="bg0_dna" value="1"></td>
+          <td id="bg0_eff">—</td>
+          <td id="bg0_i2p">—</td>
+          <td class="editable"><input type="number" id="bg0_net" value="9"></td>
+          <td class="editable"><input type="number" id="bg0_jun" value="1"></td>
+          <td class="editable"><input type="number" id="bg0_jul" value="8"></td>
+          <td class="editable">
+            <select id="bg0_mom"><option value="down">DECEL.</option><option value="up">ACCEL.</option><option value="na" selected>N/A</option></select>
+          </td>
+          <td id="bg0_pace">—</td>
+          <td id="bg0_status">—</td>
+        </tr>
+
+        <tr class="grand">
+          <td class="name">GRAND TOTAL — ALL PARTNERS</td>
+          <td id="gr_s1">—</td><td id="gr_s2">—</td><td id="gr_s3">—</td>
+          <td id="gr_s4">—</td><td id="gr_s5">—</td><td id="gr_s6">—</td>
+          <td id="gr_confirmed">—</td><td id="gr_ip">—</td><td id="gr_target">—</td>
+          <td id="gr_fill">—</td><td id="gr_gap">—</td>
+          <td id="gr_intf">—</td><td id="gr_pff">—</td><td id="gr_dna">—</td>
+          <td id="gr_eff">—</td><td id="gr_i2p">—</td>
+          <td id="gr_net">—</td>
+          <td id="gr_jun">—</td><td id="gr_jul">—</td><td>N/A</td>
+          <td id="gr_pace">—</td>
+          <td id="gr_status">—</td>
+        </tr>
+      </table>
+
+    </div>
+
+    <div class="footer">
+      Status: On Track = Confirmed ≥50% of Target (green) · Needs Attention = &lt;50% (red). *Req. Pace = Gap ÷ processing days remaining through the deadline, counted only on each partner's active confirmation days (edit weekday lists above) — not calendar days. †ALL-PARTNERS row uses calendar days as a blended reference since partners have different day patterns. Pipeline Eff. = Confirmed ÷ (Confirmed + Int. Failed + PFF Failed + PFF DNA). Int→PFF Pass% = Confirmed ÷ Interview Passed.
+    </div>
+    <div class="footer-meta">Prepared by: <input type="text" id="preparedBy" value="Admission Manager"></div>
+  </div>
+
+<script>
+const DAYNAMES = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
+
+function parseDate(str){
+  const [y,m,d] = str.split('-').map(Number);
+  return new Date(y, m-1, d);
+}
+function addDays(date, n){
+  const d = new Date(date);
+  d.setDate(d.getDate()+n);
+  return d;
+}
+function calendarDaysLeft(asOf, deadline){
+  const ms = deadline - asOf;
+  return Math.max(0, Math.round(ms/86400000));
+}
+function countWeekdays(asOf, deadline, wantedList){
+  let count = 0;
+  let d = addDays(asOf,1);
+  while (d <= deadline){
+    if (wantedList.includes(DAYNAMES[d.getDay()])) count++;
+    d = addDays(d,1);
+  }
+  return count;
+}
+function num(id){
+  const v = parseFloat(document.getElementById(id).value);
+  return isNaN(v) ? 0 : v;
+}
+function fmtPct(v){ return v.toFixed(1)+'%'; }
+function fmtNum(v){ return Math.round(v).toLocaleString(); }
+function fmtPace(v, days){
+  if (days<=0) return '—';
+  return v.toFixed(2);
+}
+function setStatus(el, fillPct){
+  el.textContent = fillPct>=50 ? 'ON TRACK' : 'NEEDS ATTENTION';
+  el.className = 'status ' + (fillPct>=50 ? 'green':'red');
+}
+function setFillCell(el, fillPct){
+  el.textContent = fmtPct(fillPct);
+  el.className = fillPct>=50 ? 'fillgreen':'fillred';
+}
+
+function courseCalc(prefix){
+  const s1=num(prefix+'_s1'), s2=num(prefix+'_s2'), s3=num(prefix+'_s3');
+  const s4=num(prefix+'_s4'), s5=num(prefix+'_s5'), s6=num(prefix+'_s6');
+  const target=num(prefix+'_target'), ip=num(prefix+'_ip');
+  const intf=num(prefix+'_intf'), pff=num(prefix+'_pff'), dna=num(prefix+'_dna');
+  const confirmed = s1+s2+s3+s4+s5+s6;
+  const fillPct = target>0 ? confirmed/target*100 : 0;
+  const gap = target-confirmed;
+  const losses = intf+pff+dna;
+  const eff = (confirmed+losses)>0 ? confirmed/(confirmed+losses)*100 : 0;
+  const i2p = ip>0 ? confirmed/ip*100 : 0;
+  return {s1,s2,s3,s4,s5,s6,target,ip,intf,pff,dna,confirmed,fillPct,gap,losses,eff,i2p};
+}
+
+function writeCourseRow(prefix, calc, procDays){
+  document.getElementById(prefix+'_confirmed').textContent = fmtNum(calc.confirmed);
+  setFillCell(document.getElementById(prefix+'_fill'), calc.fillPct);
+  document.getElementById(prefix+'_gap').textContent = fmtNum(calc.gap);
+  document.getElementById(prefix+'_eff').textContent = fmtPct(calc.eff);
+  document.getElementById(prefix+'_i2p').textContent = fmtPct(calc.i2p);
+  document.getElementById(prefix+'_pace').textContent = fmtPace(procDays>0?calc.gap/procDays:0, procDays);
+  setStatus(document.getElementById(prefix+'_status'), calc.fillPct);
+}
+
+function recalcAll(){
+  const asOf = parseDate(document.getElementById('asOfDate').value);
+  const deadline = parseDate(document.getElementById('deadlineDate').value);
+  const calDays = calendarDaysLeft(asOf, deadline);
+  document.getElementById('kpi_days').textContent = calDays;
+
+  const whDaysList = document.getElementById('wh_days').value.split(',').map(s=>s.trim()).filter(Boolean);
+  const haDaysList = document.getElementById('ha_days').value.split(',').map(s=>s.trim()).filter(Boolean);
+  const bgDaysList = document.getElementById('bg_days').value.split(',').map(s=>s.trim()).filter(Boolean);
+
+  const whProcDays = countWeekdays(asOf, deadline, whDaysList);
+  const haProcDays = countWeekdays(asOf, deadline, haDaysList);
+  const bgProcDays = countWeekdays(asOf, deadline, bgDaysList);
+
+  document.getElementById('wh_pdays_label').textContent = whProcDays;
+  document.getElementById('ha_pdays_label').textContent = haProcDays;
+  document.getElementById('bg_pdays_label').textContent = bgProcDays;
+
+  // Wolverhampton courses
+  const whCourses = ['wh0','wh1','wh2','wh3'].map(p => { const c = courseCalc(p); writeCourseRow(p, c, whProcDays); return c; });
+  const haCourse = courseCalc('ha0'); writeCourseRow('ha0', haCourse, haProcDays);
+  const bgCourse = courseCalc('bg0'); writeCourseRow('bg0', bgCourse, bgProcDays);
+
+  // Wolverhampton subtotal
+  const whSum = whCourses.reduce((a,c)=>({
+    s1:a.s1+c.s1, s2:a.s2+c.s2, s3:a.s3+c.s3, s4:a.s4+c.s4, s5:a.s5+c.s5, s6:a.s6+c.s6,
+    target:a.target+c.target, ip:a.ip+c.ip,
+    intf:a.intf+c.intf, pff:a.pff+c.pff, dna:a.dna+c.dna, confirmed:a.confirmed+c.confirmed
+  }), {s1:0,s2:0,s3:0,s4:0,s5:0,s6:0,target:0,ip:0,intf:0,pff:0,dna:0,confirmed:0});
+  const whFill = whSum.target>0 ? whSum.confirmed/whSum.target*100 : 0;
+  const whGap = whSum.target - whSum.confirmed;
+  const whLosses = whSum.intf+whSum.pff+whSum.dna;
+  const whEff = (whSum.confirmed+whLosses)>0 ? whSum.confirmed/(whSum.confirmed+whLosses)*100 : 0;
+  const whI2p = whSum.ip>0 ? whSum.confirmed/whSum.ip*100 : 0;
+  const whNet = ['wh0','wh1','wh2','wh3'].reduce((a,p)=>a+num(p+'_net'),0);
+  const whJun = ['wh0','wh1','wh2','wh3'].reduce((a,p)=>a+num(p+'_jun'),0);
+  const whJul = ['wh0','wh1','wh2','wh3'].reduce((a,p)=>a+num(p+'_jul'),0);
+  const whPace = whProcDays>0 ? whGap/whProcDays : 0;
+
+  document.getElementById('wh_sub_s1').textContent = fmtNum(whSum.s1);
+  document.getElementById('wh_sub_s2').textContent = fmtNum(whSum.s2);
+  document.getElementById('wh_sub_s3').textContent = fmtNum(whSum.s3);
+  document.getElementById('wh_sub_s4').textContent = fmtNum(whSum.s4);
+  document.getElementById('wh_sub_s5').textContent = fmtNum(whSum.s5);
+  document.getElementById('wh_sub_s6').textContent = fmtNum(whSum.s6);
+  document.getElementById('wh_sub_confirmed').textContent = fmtNum(whSum.confirmed);
+  document.getElementById('wh_sub_ip').textContent = fmtNum(whSum.ip);
+  document.getElementById('wh_sub_target').textContent = fmtNum(whSum.target);
+  document.getElementById('wh_sub_fill').textContent = fmtPct(whFill);
+  document.getElementById('wh_sub_gap').textContent = fmtNum(whGap);
+  document.getElementById('wh_sub_intf').textContent = fmtNum(whSum.intf);
+  document.getElementById('wh_sub_pff').textContent = fmtNum(whSum.pff);
+  document.getElementById('wh_sub_dna').textContent = fmtNum(whSum.dna);
+  document.getElementById('wh_sub_eff').textContent = fmtPct(whEff);
+  document.getElementById('wh_sub_i2p').textContent = fmtPct(whI2p);
+  document.getElementById('wh_sub_net').textContent = fmtNum(whNet);
+  document.getElementById('wh_sub_jun').textContent = fmtNum(whJun);
+  document.getElementById('wh_sub_jul').textContent = fmtNum(whJul);
+  document.getElementById('wh_sub_pace').textContent = fmtPace(whPace, whProcDays);
+  setStatus(document.getElementById('wh_sub_status'), whFill);
+
+  // Partner performance table rows
+  function writePP(prefix, confirmed,target,fill,gap,eff,pdays,pace){
+    document.getElementById('pp_'+prefix+'_confirmed').textContent = fmtNum(confirmed);
+    document.getElementById('pp_'+prefix+'_target').textContent = fmtNum(target);
+    setFillCell(document.getElementById('pp_'+prefix+'_fill'), fill);
+    document.getElementById('pp_'+prefix+'_gap').textContent = fmtNum(gap);
+    document.getElementById('pp_'+prefix+'_eff').textContent = fmtPct(eff);
+    document.getElementById('pp_'+prefix+'_pdays').textContent = pdays;
+    document.getElementById('pp_'+prefix+'_pace').textContent = fmtPace(pace, pdays);
+    setStatus(document.getElementById('pp_'+prefix+'_status'), fill);
+  }
+  writePP('wh', whSum.confirmed, whSum.target, whFill, whGap, whEff, whProcDays, whPace);
+  writePP('ha', haCourse.confirmed, haCourse.target, haCourse.fillPct, haCourse.gap, haCourse.eff, haProcDays, haProcDays>0?haCourse.gap/haProcDays:0);
+  writePP('bg', bgCourse.confirmed, bgCourse.target, bgCourse.fillPct, bgCourse.gap, bgCourse.eff, bgProcDays, bgProcDays>0?bgCourse.gap/bgProcDays:0);
+
+  // Grand total
+  const gr = {
+    s1: whSum.s1+haCourse.s1+bgCourse.s1,
+    s2: whSum.s2+haCourse.s2+bgCourse.s2,
+    s3: whSum.s3+haCourse.s3+bgCourse.s3,
+    s4: whSum.s4+haCourse.s4+bgCourse.s4,
+    s5: whSum.s5+haCourse.s5+bgCourse.s5,
+    s6: whSum.s6+haCourse.s6+bgCourse.s6,
+    confirmed: whSum.confirmed+haCourse.confirmed+bgCourse.confirmed,
+    target: whSum.target+haCourse.target+bgCourse.target,
+    ip: whSum.ip+haCourse.ip+bgCourse.ip,
+    intf: whSum.intf+haCourse.intf+bgCourse.intf,
+    pff: whSum.pff+haCourse.pff+bgCourse.pff,
+    dna: whSum.dna+haCourse.dna+bgCourse.dna,
+    net: whNet+num('ha0_net')+num('bg0_net'),
+    jun: whJun+num('ha0_jun')+num('bg0_jun'),
+    jul: whJul+num('ha0_jul')+num('bg0_jul'),
+  };
+  const grFill = gr.target>0 ? gr.confirmed/gr.target*100 : 0;
+  const grGap = gr.target-gr.confirmed;
+  const grLosses = gr.intf+gr.pff+gr.dna;
+  const grEff = (gr.confirmed+grLosses)>0 ? gr.confirmed/(gr.confirmed+grLosses)*100 : 0;
+  const grI2p = gr.ip>0 ? gr.confirmed/gr.ip*100 : 0;
+  const grPace = calDays>0 ? grGap/calDays : 0;
+
+  document.getElementById('gr_s1').textContent = fmtNum(gr.s1);
+  document.getElementById('gr_s2').textContent = fmtNum(gr.s2);
+  document.getElementById('gr_s3').textContent = fmtNum(gr.s3);
+  document.getElementById('gr_s4').textContent = fmtNum(gr.s4);
+  document.getElementById('gr_s5').textContent = fmtNum(gr.s5);
+  document.getElementById('gr_s6').textContent = fmtNum(gr.s6);
+  document.getElementById('gr_confirmed').textContent = fmtNum(gr.confirmed);
+  document.getElementById('gr_ip').textContent = fmtNum(gr.ip);
+  document.getElementById('gr_target').textContent = fmtNum(gr.target);
+  document.getElementById('gr_fill').textContent = fmtPct(grFill);
+  document.getElementById('gr_gap').textContent = fmtNum(grGap);
+  document.getElementById('gr_intf').textContent = fmtNum(gr.intf);
+  document.getElementById('gr_pff').textContent = fmtNum(gr.pff);
+  document.getElementById('gr_dna').textContent = fmtNum(gr.dna);
+  document.getElementById('gr_eff').textContent = fmtPct(grEff);
+  document.getElementById('gr_i2p').textContent = fmtPct(grI2p);
+  document.getElementById('gr_net').textContent = fmtNum(gr.net);
+  document.getElementById('gr_jun').textContent = fmtNum(gr.jun);
+  document.getElementById('gr_jul').textContent = fmtNum(gr.jul);
+  document.getElementById('gr_pace').textContent = fmtPace(grPace, calDays) + '†';
+  setStatus(document.getElementById('gr_status'), grFill);
+
+  writePP('all', gr.confirmed, gr.target, grFill, grGap, grEff, calDays+'†', grPace);
+
+  // Top KPI cards
+  document.getElementById('kpi_confirmed').textContent = fmtNum(gr.confirmed);
+  document.getElementById('kpi_target').textContent = fmtNum(gr.target);
+  document.getElementById('kpi_fill').textContent = fmtPct(grFill);
+  document.getElementById('kpi_fill').className = 'card-value ' + (grFill>=50?'green':'red');
+  document.getElementById('kpi_gap').textContent = fmtNum(grGap);
+  document.getElementById('kpi_eff').textContent = fmtPct(grEff);
+  document.getElementById('kpi_i2p').textContent = fmtPct(grI2p);
+
+  // Bar chart
+  function setBar(id, lblId, fill){
+    const bar = document.getElementById(id);
+    bar.style.width = Math.min(fill,100)+'%';
+    bar.style.background = fill>=50 ? '#2E7D32' : '#B00020';
+    document.getElementById(lblId).textContent = fmtPct(fill);
+  }
+  setBar('bar_wh','bar_wh_lbl', whFill);
+  setBar('bar_ha','bar_ha_lbl', haCourse.fillPct);
+  setBar('bar_bg','bar_bg_lbl', bgCourse.fillPct);
+  setBar('bar_all','bar_all_lbl', grFill);
+}
+
+const DEFAULTS = {};
+function captureDefaults(){
+  document.querySelectorAll('#sheet input, #sheet select').forEach(el=>{
+    DEFAULTS[el.id] = el.value;
+  });
+}
+function resetDefaults(){
+  Object.keys(DEFAULTS).forEach(id=>{
+    document.getElementById(id).value = DEFAULTS[id];
+  });
+  recalcAll();
+  flashMsg('Reset to last week\'s data.');
+}
+
+function flashMsg(text, ms){
+  const msg = document.getElementById('statusMsg');
+  msg.textContent = text;
+  setTimeout(()=>{ if(msg.textContent===text) msg.textContent=''; }, ms || 5000);
+}
+
+const STORAGE_KEY = 'partner_kpi_data_v1';
+
+// Detects whether Claude's artifact storage is present. Guarded in try/catch
+// because even probing an API can throw in some sandboxed contexts.
+function hasClaudeStorage(){
+  try { return !!(window.storage && typeof window.storage.set === 'function'); }
+  catch(e){ return false; }
+}
+// Only reached when Claude storage is absent — i.e. this file was downloaded
+// and opened directly in a normal browser tab, where localStorage is standard
+// and fully supported (this branch never runs inside Claude.ai).
+function hasLocalStorage(){
+  try { return typeof localStorage !== 'undefined' && localStorage !== null; }
+  catch(e){ return false; }
+}
+
+function collectFormData(){
+  const data = {};
+  document.querySelectorAll('#sheet input, #sheet select').forEach(el=>{ data[el.id] = el.value; });
+  return data;
+}
+function applyFormData(data){
+  Object.keys(data).forEach(id=>{
+    const el = document.getElementById(id);
+    if (el) el.value = data[id];
+  });
+  recalcAll();
+}
+
+async function saveChanges(){
+  const json = JSON.stringify(collectFormData());
+  try {
+    if (hasClaudeStorage()){
+      const result = await window.storage.set(STORAGE_KEY, json, false);
+      flashMsg(result ? 'Saved. This loads automatically next time you open this page here in Claude.' : 'Save failed — please try again.');
+      return;
+    }
+    if (hasLocalStorage()){
+      localStorage.setItem(STORAGE_KEY, json);
+      flashMsg('Saved to this browser. This loads automatically next time you open this file in Chrome.');
+      return;
+    }
+    flashMsg('No storage available in this environment — changes won\'t persist after you close this page.');
+  } catch (err) {
+    flashMsg('Save failed: ' + err.message);
+    console.error(err);
+  }
+}
+
+async function loadSaved(silent){
+  try {
+    if (hasClaudeStorage()){
+      const result = await window.storage.get(STORAGE_KEY, false);
+      if (result && result.value){
+        applyFormData(JSON.parse(result.value));
+        if(!silent) flashMsg('Loaded your last saved numbers.');
+        return true;
+      }
+      return false;
+    }
+    if (hasLocalStorage()){
+      const raw = localStorage.getItem(STORAGE_KEY);
+      if (raw){
+        applyFormData(JSON.parse(raw));
+        if(!silent) flashMsg('Loaded your last saved numbers.');
+        return true;
+      }
+      return false;
+    }
+  } catch (err) {
+    // No saved data yet on first-ever use — this is expected, not an error to surface.
+    console.log('loadSaved: nothing saved yet', err.message);
+  }
+  return false;
+}
+
+document.getElementById('sheet').addEventListener('input', recalcAll);
+document.getElementById('sheet').addEventListener('change', recalcAll);
+
+async function downloadPDF(){
+  const msg = document.getElementById('statusMsg');
+  msg.textContent = '';
+  try {
+    window.print();
+    msg.textContent = 'If a print dialog opened, choose "Save as PDF." If nothing happened, use "Save this page" below instead.';
+  } catch (err) {
+    msg.textContent = 'Print is blocked here. Use "Save this page" below instead.';
+    console.error(err);
+  }
+  setTimeout(()=>{ msg.textContent = ''; }, 7000);
+}
+
+
+
+captureDefaults();
+loadSaved(true).then(loaded => {
+  if (!loaded) recalcAll();
+});
+</script>
+
+</body>
+</html>
