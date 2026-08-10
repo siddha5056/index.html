@@ -2,13 +2,13 @@ const { neon } = require('@neondatabase/serverless');
 
 module.exports = async function handler(req, res) {
   try {
-    if (!process.env.DATABASE_URL) {
+    if (!process.env.SOCKPI_DATABASE_URL) {
       return res.status(500).json({
-        error: 'DATABASE_URL is not configured'
+        error: 'Database is not configured'
       });
     }
 
-    const sql = neon(process.env.DATABASE_URL);
+    const sql = neon(process.env.SOCKPI_DATABASE_URL);
 
     // Create shared KPI table automatically
     await sql`
