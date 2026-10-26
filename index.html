@@ -174,6 +174,18 @@ body{background:#eef5f3;color:#162c2b}
 
 /* Partner banner sizing fix: display complete artwork without squeezing or clipping */
 .soc-partner-banner{align-items:center;gap:16px;padding:16px 24px;min-height:112px}.soc-partner-owner{min-width:195px;flex:0 0 195px}.soc-partner-logos{flex:1 1 0;min-width:0;overflow:visible}.soc-partner-strip{display:block;width:100%;max-width:none;height:auto;max-height:115px;object-fit:contain;object-position:center}@media(max-width:900px){.soc-partner-banner{display:block;padding:16px}.soc-partner-owner{margin-bottom:14px}.soc-partner-divider{display:none}.soc-partner-logos{width:100%;overflow-x:auto}.soc-partner-strip{min-width:650px;max-height:none}}
+
+/* Partner lockup: keep SOC and all five partner marks as one immediate, continuous header */
+.soc-partner-banner{max-width:1400px;display:flex;align-items:center;justify-content:flex-start;gap:14px;padding:12px 18px;min-height:104px}
+.soc-partner-owner{flex:0 0 178px;min-width:178px;gap:9px}
+.soc-partner-mark{font-size:32px;line-height:1.05;font-weight:900;letter-spacing:-2px;color:#46b5b1;border-bottom:5px solid #e8d32e}
+.soc-owner-copy strong{font-size:11px}
+.soc-owner-copy small{font-size:9px}
+.soc-partner-divider{flex:0 0 1px;height:62px;margin:0 3px;background:#819c9a}
+.soc-partner-logos{flex:1 1 auto;min-width:0;display:flex;align-items:center;justify-content:flex-start;overflow:visible}
+.soc-partner-strip{display:block;width:100%;max-width:1090px;height:auto;max-height:none;object-fit:contain;object-position:left center}
+@media(max-width:900px){.soc-partner-banner{display:flex;flex-wrap:nowrap;overflow-x:auto;gap:12px}.soc-partner-owner{flex:0 0 178px;margin:0}.soc-partner-divider{display:block}.soc-partner-logos{flex:0 0 760px;width:760px;overflow:visible}.soc-partner-strip{min-width:0;width:760px}}
+
 </style>
 </head>
 <body>
