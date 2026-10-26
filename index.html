@@ -164,6 +164,9 @@ body{background:#eef5f3;color:#162c2b}
 .sep-workspace .status.green{background:#e0f5ee;color:#087d68}
 .sep-workspace .status.red{background:#fff0e7;color:#b95a25}
 @media print{body{background:#fff}.sheet{border:0;box-shadow:none;width:auto}.sep-workspace .cards td{padding:8px 4px}.sep-workspace .card-value{font-size:17px}.sep-workspace .header{padding:10px}.sep-workspace .content{padding:8px}}
+
+/* Shared SOC partner identity bar, independent of both intake datasets */
+.soc-partner-banner{max-width:1400px;margin:0 auto 14px;padding:18px 25px;display:flex;align-items:center;gap:24px;background:#fff;border:1px solid #dce9e6;border-radius:14px;box-shadow:0 4px 18px rgba(15,66,61,.05)}.soc-partner-owner{display:flex;align-items:center;gap:12px;flex-shrink:0}.soc-partner-mark{font-size:25px;font-weight:900;letter-spacing:-2px;color:#18a99c;border-bottom:4px solid #e8c72e;padding:0 2px}.soc-owner-copy{display:flex;flex-direction:column;gap:4px}.soc-owner-copy strong{font-size:12px;color:#183d39}.soc-owner-copy small{font-size:10px;color:#728783}.soc-partner-divider{height:42px;width:1px;background:#dce9e6;flex-shrink:0}.soc-partner-logos{flex:1;display:flex;justify-content:space-around;align-items:center;gap:18px}.soc-partner{display:flex;align-items:center;gap:7px;color:#182b35;font-size:10px;line-height:1.15;white-space:nowrap}.soc-partner img{height:29px;width:29px;object-fit:contain}.soc-partner b{font-weight:800}@media(max-width:900px){.soc-partner-banner{flex-wrap:wrap}.soc-partner-divider{display:none}.soc-partner-logos{flex-wrap:wrap;justify-content:flex-start}}@media print{.soc-partner-banner{box-shadow:none;border:0;margin-bottom:5px;padding:8px}}
 </style>
 </head>
 <body>
@@ -178,7 +181,8 @@ body{background:#eef5f3;color:#162c2b}
     </span>
   </div>
 
-  <div class="sheet sep-workspace" id="sheet">
+  <div class="soc-partner-banner" aria-label="School of Coding and AI university partners"><div class="soc-partner-owner"><div class="soc-partner-mark">SOC</div><div class="soc-owner-copy"><strong>School of Coding &amp; AI</strong><small>Admissions Performance Hub</small></div></div><div class="soc-partner-divider"></div><div class="soc-partner-logos"><div class="soc-partner"><img src="https://www.google.com/s2/favicons?domain=wlv.ac.uk&sz=128" alt="" loading="lazy"><span>University of<br><b>Wolverhampton</b></span></div><div class="soc-partner"><img src="https://www.google.com/s2/favicons?domain=harper-adams.ac.uk&sz=128" alt="" loading="lazy"><span><b>Harper Adams</b><br>University</span></div><div class="soc-partner"><img src="https://www.google.com/s2/favicons?domain=brighton.ac.uk&sz=128" alt="" loading="lazy"><span>University of<br><b>Brighton</b></span></div><div class="soc-partner"><img src="https://www.google.com/s2/favicons?domain=staffs.ac.uk&sz=128" alt="" loading="lazy"><span>University of<br><b>Staffordshire</b></span></div><div class="soc-partner"><img src="https://www.google.com/s2/favicons?domain=bimm.ac.uk&sz=128" alt="" loading="lazy"><span><b>BIMM</b><br>UNIVERSITY</span></div></div></div>
+<div class="sheet sep-workspace" id="sheet">
     <div class="header">
       <h1>PARTNER RECRUITMENT PERFORMANCE — EXECUTIVE SUMMARY</h1>
     </div>
