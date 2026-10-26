@@ -112,6 +112,9 @@
     table.detail td.editable { background:transparent; }
     @page { size: landscape; margin: 8mm; }
   }
+
+/* SOC intake controls and January executive workspace */
+.intake-picker{display:inline-flex;border:1px solid #80bdb7;border-radius:8px;overflow:hidden;margin-right:10px;background:#fff}.intake-option{border:0;padding:9px 14px;background:#fff;color:#167f76;font-weight:750;font-size:12px;cursor:pointer}.intake-option.active{background:#118a7e;color:#fff}.jan-workspace{display:none}.jan-workspace.active{display:block}.sep-workspace.hidden{display:none}.jan-head{background:#fff;padding:30px 38px 12px;border-bottom:1px solid #d8ebe7}.jan-eyebrow{color:#0e8277;letter-spacing:2px;font-size:12px;font-weight:800}.jan-head h2{font:700 29px Georgia,serif;color:#112328;margin:10px 0}.jan-note{font-size:12px;color:#697c7f}.jan-content{padding:20px 36px 34px}.jan-metrics{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin:0 0 20px}.jan-metric{border:1px solid #d6e7e3;border-radius:12px;padding:15px;background:#f6faf9}.jan-metric small{display:block;text-transform:uppercase;font-size:10px;font-weight:800;letter-spacing:.6px;color:#68817e}.jan-metric strong{display:block;color:#107e75;font-size:28px;margin:7px 0}.jan-metric span{font-size:11px;color:#6a7b7b}.jan-section{font-size:14px;color:#0f776e;font-weight:800;margin:18px 0 9px;letter-spacing:.2px}.jan-table{width:100%;border-collapse:collapse;font-size:12px}.jan-table th{text-align:right;background:#eff5f3;color:#657c7a;padding:10px 8px;border-bottom:2px solid #287f76;text-transform:uppercase;font-size:10px;letter-spacing:.5px}.jan-table th:first-child,.jan-table td:first-child{text-align:left}.jan-table td{padding:9px 8px;text-align:right;border-bottom:1px solid #e2eae9}.jan-table tr:last-child td{font-weight:bold;background:#eff6f4}.jan-table input{width:66px;padding:6px;border:1px solid #c6dcd8;border-radius:5px;text-align:right;background:#fff;color:#132d2c}.jan-table .partner-name{font-weight:bold;color:#132d2c}.jan-table .course-note{font-size:10px;color:#6b817d;display:block;font-weight:normal;margin-top:3px}.jan-tags{display:flex;gap:7px;flex-wrap:wrap}.jan-tag{font-size:11px;padding:5px 9px;border-radius:40px;background:#e7f5f1;color:#0b8074}.jan-progress{height:9px;background:#e5efec;border-radius:20px;overflow:hidden;min-width:75px}.jan-progress div{height:100%;background:#0e9284}.jan-grid{display:grid;grid-template-columns:1fr 1fr;gap:20px}.jan-panel{border:1px solid #dce8e6;border-radius:12px;padding:16px}.jan-muted{font-size:11px;color:#708481;margin:8px 0 14px}.jan-month-bars{display:flex;height:14px;border-radius:12px;overflow:hidden;margin:16px 0 6px}.jan-month-bars span:nth-child(1){background:#c9e5e0}.jan-month-bars span:nth-child(2){background:#71bcb1}.jan-month-bars span:nth-child(3){background:#0d887d}.jan-month-bars span:nth-child(4){background:#a8d9d1}@media(max-width:760px){.jan-metrics{grid-template-columns:1fr 1fr}.jan-grid{grid-template-columns:1fr}.toolbar{flex-wrap:wrap;gap:8px}.jan-content{padding:15px}.jan-head{padding:18px}}@media print{.jan-workspace:not(.active),.sep-workspace.hidden{display:none!important}.jan-workspace.active{display:block}.intake-picker{display:none}}
 </style>
 </head>
 <body>
@@ -119,14 +122,14 @@
   <div class="toolbar">
     <span class="hint">Edit any white/yellow field below — everything recalculates live.</span>
     <span>
-      <button class="btn secondary" onclick="resetDefaults()">Reset to last week's data</button>
+      <span class="intake-picker"><button type="button" id="intakeSep" class="intake-option active" onclick="switchIntake('sep')">September 2026</button><button type="button" id="intakeJan" class="intake-option" onclick="switchIntake('jan')">January 2027</button></span>
       <button class="btn" onclick="saveChanges()">💾 Save changes</button>
       <button class="btn secondary" onclick="downloadPDF()">🖶 Save as PDF</button>
       <span class="status-msg" id="statusMsg"></span>
     </span>
   </div>
 
-  <div class="sheet" id="sheet">
+  <div class="sheet sep-workspace" id="sheet">
     <div class="header">
       <h1>PARTNER RECRUITMENT PERFORMANCE — EXECUTIVE SUMMARY</h1>
     </div>
@@ -466,7 +469,50 @@
     <div class="footer-meta">Prepared by: <input type="text" id="preparedBy" value="Admission Manager"></div>
   </div>
 
+
+<div class="sheet jan-workspace" id="janSheet"><div class="jan-head"><div class="jan-eyebrow">JANUARY 2027 · ADMISSIONS PERFORMANCE</div><h2>Partner Recruitment — Executive KPI Dashboard</h2><div class="jan-note">12 courses · 6 partner delivery groups · Contracted plan with 15% recruitment buffer · Editable S1–S6 confirmation sources</div></div><div class="jan-content"><div class="jan-metrics"><div class="jan-metric"><small>Plan target</small><strong id="janPlan">1,737</strong><span>Includes 15% buffer</span></div><div class="jan-metric"><small>Confirmed</small><strong id="janConfirmed">0</strong><span>Combined S1–S6 sources</span></div><div class="jan-metric"><small>Overall fill rate</small><strong id="janFill">0%</strong><span>Confirmed ÷ plan target</span></div><div class="jan-metric"><small>Gap to plan</small><strong id="janGap">1,737</strong><span>Required confirmations</span></div></div><div class="jan-section">UNIVERSITY & COURSE PERFORMANCE</div><div class="jan-muted">Enter confirmed students under S1–S6. University targets and contract allocations follow the approved January 2027 plan.</div><div style="overflow:auto"><table class="jan-table"><thead><tr><th>Partner · Course</th><th>S1</th><th>S2</th><th>S3</th><th>S4</th><th>S5</th><th>S6</th><th>Confirmed</th><th>Contract</th><th>+15%</th><th>Plan</th><th>Fill</th><th>Gap</th></tr></thead><tbody id="janCourseRows"></tbody></table></div><div class="jan-grid"><div class="jan-panel"><div class="jan-section">MONTHLY CONFIRMATION PLAN</div><div class="jan-month-bars"><span style="width:9.5%"></span><span style="width:45.1%"></span><span style="width:39.4%"></span><span style="width:6%"></span></div><table class="jan-table"><thead><tr><th>Month</th><th>Target</th><th>Share</th></tr></thead><tbody><tr><td>October 2026</td><td>165</td><td>9%</td></tr><tr><td>November 2026</td><td>784</td><td>45%</td></tr><tr><td>December 2026</td><td>684</td><td>39%</td></tr><tr><td>January 2027</td><td>104</td><td>6%</td></tr><tr><td>Total</td><td>1,737</td><td>100%</td></tr></tbody></table></div><div class="jan-panel"><div class="jan-section">UNIVERSITY DEADLINES & INTERVIEWS</div><table class="jan-table"><thead><tr><th>Partner</th><th>Deadline</th><th>Interview days</th></tr></thead><tbody><tr><td>Wolverhampton</td><td>14 Dec</td><td>Mon · Tue · Wed · Sat · Sun</td></tr><tr><td>Harper Birmingham</td><td>4 Jan</td><td>Mon · Wed · Sun</td></tr><tr><td>Harper Telford</td><td>4 Jan</td><td>Wed · Sun</td></tr><tr><td>Brighton</td><td>18 Jan</td><td>Mon · Tue · Wed · Sat · Sun</td></tr><tr><td>BIMM</td><td>4 Jan</td><td>Mon · Tue · Wed · Sat · Sun</td></tr><tr><td>Staffordshire</td><td>4 Jan</td><td>Tue · Sun</td></tr></tbody></table></div></div><div class="jan-section">PARTNER COMPLETION</div><div id="janPartnerProgress"></div><p class="jan-muted">January figures are stored separately from September 2026. Targets reflect the supplied planning image; in-validation courses are retained as planning allocations.</p></div></div>
 <script>
+
+const JAN_COURSES=[
+["Wolverhampton","Health & Social Care",280,322,"Contracted"],["Wolverhampton","Computing & IT",240,276,"Contracted"],
+["Harper Adams · Birmingham","Digital Business Management",200,230,"Contracted"],
+["Harper Adams · Telford","Digital Business Management",100,115,"Contracted"],["Harper Adams · Telford","Food Business Management",100,115,"Contracted"],
+["University of Brighton","Digital Games Development",175,201,"Contracted"],["University of Brighton","Business & Entrepreneurship",100,115,"In validation"],["University of Brighton","Marketing",100,115,"In validation"],
+["BIMM University","Creative Business Management",150,173,"In validation"],
+["University of Staffordshire","MBA",25,29,"Contracted"],["University of Staffordshire","MSc Business Computing",20,23,"Contracted"],["University of Staffordshire","Public Health (MPH)",20,23,"In validation"]];
+let activeIntake='sep';
+function switchIntake(value){
+ activeIntake=value;
+ document.getElementById('sheet').classList.toggle('hidden',value!=='sep');
+ document.getElementById('janSheet').classList.toggle('active',value==='jan');
+ document.getElementById('intakeSep').classList.toggle('active',value==='sep');
+ document.getElementById('intakeJan').classList.toggle('active',value==='jan');
+ document.querySelector('.toolbar .hint').textContent=value==='sep'?'Edit any white/yellow field below — everything recalculates live.':'January 2027 · Enter confirmed numbers under S1–S6 and save to the shared dashboard.';
+ document.title=value==='sep'?'Partner KPI · September 2026':'Partner KPI · January 2027';
+}
+function buildJanuary(){
+const tbody=document.getElementById('janCourseRows');
+tbody.innerHTML=JAN_COURSES.map((c,i)=>'<tr><td class="partner-name">'+c[0]+'<span class="course-note">'+c[1]+' · '+c[4]+'</span></td>'+Array.from({length:6},(_,j)=>'<td><input min="0" type="number" id="jan_'+i+'_s'+(j+1)+'" value="0"></td>').join('')+'<td id="jan_'+i+'_confirmed">0</td><td>'+c[2]+'</td><td>+'+(c[3]-c[2])+'</td><td><b>'+c[3]+'</b></td><td id="jan_'+i+'_fill">0%</td><td id="jan_'+i+'_gap">'+c[3]+'</td></tr>').join('');
+document.getElementById('janSheet').addEventListener('input',recalcJanuary);
+recalcJanuary();
+}
+function recalcJanuary(){
+let confirmed=0;const partners={};let totalPlan=0;
+JAN_COURSES.forEach((c,i)=>{
+let count=0;for(let j=1;j<=6;j++)count+=Math.max(0,Number(document.getElementById('jan_'+i+'_s'+j).value)||0);
+confirmed+=count;totalPlan+=c[3];
+document.getElementById('jan_'+i+'_confirmed').textContent=count.toLocaleString();
+document.getElementById('jan_'+i+'_fill').textContent=(100*count/c[3]).toFixed(1)+'%';
+document.getElementById('jan_'+i+'_gap').textContent=Math.max(0,c[3]-count).toLocaleString();
+if(!partners[c[0]])partners[c[0]]={count:0,target:0};partners[c[0]].count+=count;partners[c[0]].target+=c[3];
+});
+document.getElementById('janPlan').textContent=totalPlan.toLocaleString();
+document.getElementById('janConfirmed').textContent=confirmed.toLocaleString();
+document.getElementById('janFill').textContent=(100*confirmed/totalPlan).toFixed(1)+'%';
+document.getElementById('janGap').textContent=Math.max(0,totalPlan-confirmed).toLocaleString();
+document.getElementById('janPartnerProgress').innerHTML=Object.entries(partners).map(([name,p])=>'<div style="margin:10px 0"><div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:5px"><b>'+name+'</b><span>'+p.count+' / '+p.target+' · '+(100*p.count/p.target).toFixed(1)+'%</span></div><div class="jan-progress"><div style="width:'+Math.min(100,p.count/p.target*100)+'%"></div></div></div>').join('');
+}
+
 const DAYNAMES = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
 
 function parseDate(str){
@@ -732,7 +778,7 @@ function applyFormData(data){
 
 async function saveChanges(){
   try {
-    const data = collectFormData();
+    const data = activeIntake==='jan' ? collectJanuaryData() : collectFormData();
 
     flashMsg('Saving shared KPI data...');
 
@@ -742,6 +788,7 @@ async function saveChanges(){
         'Content-Type': 'application/json'
       },
       body: JSON.stringify({
+        intake: activeIntake,
         data: data,
         updatedBy: data.preparedBy || 'Admissions Team'
       })
@@ -763,7 +810,7 @@ async function saveChanges(){
 
 async function loadSaved(silent){
   try {
-    const response = await fetch('/api/kpi', {
+    const response = await fetch('/api/kpi?intake='+activeIntake, {
       method: 'GET',
       headers: {
         'Accept': 'application/json'
@@ -778,7 +825,7 @@ async function loadSaved(silent){
     }
 
     if (result.data) {
-      applyFormData(result.data);
+      if(activeIntake==='jan')applyJanuaryData(result.data);else applyFormData(result.data);
 
       if (!silent) {
         let message = '✓ Latest shared KPI data loaded.';
@@ -828,6 +875,13 @@ async function downloadPDF(){
 
 
 
+
+function collectJanuaryData(){const o={};document.querySelectorAll('#janSheet input').forEach(e=>o[e.id]=e.value);return o;}
+function applyJanuaryData(d){Object.entries(d).forEach(([k,v])=>{if(k.startsWith('jan_')){let e=document.getElementById(k);if(e)e.value=v;}});recalcJanuary();}
+const originalSwitchIntake=switchIntake;
+switchIntake=function(v){originalSwitchIntake(v);loadSaved(true);};
+
+buildJanuary();
 captureDefaults();
 loadSaved(true).then(loaded => {
   if (!loaded) recalcAll();
