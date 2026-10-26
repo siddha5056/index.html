@@ -20,12 +20,16 @@ module.exports = async function handler(req, res) {
       )
     `;
 
+    const intake = String(req.method === 'GET' ? (req.query?.intake || 'sep') : (req.body?.intake || 'sep'));
+    if (!['sep','jan'].includes(intake)) return res.status(400).json({error:'Invalid intake'});
+    const rowId = intake === 'jan' ? 2 : 1;
+
     // Load the latest shared KPI data
     if (req.method === 'GET') {
       const rows = await sql`
         SELECT data, updated_at, updated_by
         FROM kpi_dashboard_state
-        WHERE id = 1
+        WHERE id = ${rowId}
       `;
 
       return res.status(200).json(
@@ -58,7 +62,7 @@ module.exports = async function handler(req, res) {
         INSERT INTO kpi_dashboard_state
           (id, data, updated_at, updated_by)
         VALUES
-          (1, ${data}::jsonb, NOW(), ${updatedBy})
+          (${rowId}, ${data}::jsonb, NOW(), ${updatedBy})
 
         ON CONFLICT (id)
         DO UPDATE SET
