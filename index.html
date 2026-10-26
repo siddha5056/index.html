@@ -115,6 +115,55 @@
 
 /* SOC intake controls and January executive workspace */
 .intake-picker{display:inline-flex;border:1px solid #80bdb7;border-radius:8px;overflow:hidden;margin-right:10px;background:#fff}.intake-option{border:0;padding:9px 14px;background:#fff;color:#167f76;font-weight:750;font-size:12px;cursor:pointer}.intake-option.active{background:#118a7e;color:#fff}.jan-workspace{display:none}.jan-workspace.active{display:block}.sep-workspace.hidden{display:none}.jan-head{background:#fff;padding:30px 38px 12px;border-bottom:1px solid #d8ebe7}.jan-eyebrow{color:#0e8277;letter-spacing:2px;font-size:12px;font-weight:800}.jan-head h2{font:700 29px Georgia,serif;color:#112328;margin:10px 0}.jan-note{font-size:12px;color:#697c7f}.jan-content{padding:20px 36px 34px}.jan-metrics{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin:0 0 20px}.jan-metric{border:1px solid #d6e7e3;border-radius:12px;padding:15px;background:#f6faf9}.jan-metric small{display:block;text-transform:uppercase;font-size:10px;font-weight:800;letter-spacing:.6px;color:#68817e}.jan-metric strong{display:block;color:#107e75;font-size:28px;margin:7px 0}.jan-metric span{font-size:11px;color:#6a7b7b}.jan-section{font-size:14px;color:#0f776e;font-weight:800;margin:18px 0 9px;letter-spacing:.2px}.jan-table{width:100%;border-collapse:collapse;font-size:12px}.jan-table th{text-align:right;background:#eff5f3;color:#657c7a;padding:10px 8px;border-bottom:2px solid #287f76;text-transform:uppercase;font-size:10px;letter-spacing:.5px}.jan-table th:first-child,.jan-table td:first-child{text-align:left}.jan-table td{padding:9px 8px;text-align:right;border-bottom:1px solid #e2eae9}.jan-table tr:last-child td{font-weight:bold;background:#eff6f4}.jan-table input{width:66px;padding:6px;border:1px solid #c6dcd8;border-radius:5px;text-align:right;background:#fff;color:#132d2c}.jan-table .partner-name{font-weight:bold;color:#132d2c}.jan-table .course-note{font-size:10px;color:#6b817d;display:block;font-weight:normal;margin-top:3px}.jan-tags{display:flex;gap:7px;flex-wrap:wrap}.jan-tag{font-size:11px;padding:5px 9px;border-radius:40px;background:#e7f5f1;color:#0b8074}.jan-progress{height:9px;background:#e5efec;border-radius:20px;overflow:hidden;min-width:75px}.jan-progress div{height:100%;background:#0e9284}.jan-grid{display:grid;grid-template-columns:1fr 1fr;gap:20px}.jan-panel{border:1px solid #dce8e6;border-radius:12px;padding:16px}.jan-muted{font-size:11px;color:#708481;margin:8px 0 14px}.jan-month-bars{display:flex;height:14px;border-radius:12px;overflow:hidden;margin:16px 0 6px}.jan-month-bars span:nth-child(1){background:#c9e5e0}.jan-month-bars span:nth-child(2){background:#71bcb1}.jan-month-bars span:nth-child(3){background:#0d887d}.jan-month-bars span:nth-child(4){background:#a8d9d1}@media(max-width:760px){.jan-metrics{grid-template-columns:1fr 1fr}.jan-grid{grid-template-columns:1fr}.toolbar{flex-wrap:wrap;gap:8px}.jan-content{padding:15px}.jan-head{padding:18px}}@media print{.jan-workspace:not(.active),.sep-workspace.hidden{display:none!important}.jan-workspace.active{display:block}.intake-picker{display:none}}
+
+/* Unified SOC executive design: visual-only styling for the September view. */
+body{background:#eef5f3;color:#162c2b}
+.sheet{width:min(1400px,calc(100% - 16px));border-radius:14px;overflow:hidden;box-shadow:0 10px 38px rgba(15,66,61,.10);border:1px solid #dce9e6}
+.toolbar{max-width:1400px;padding:10px 8px;gap:12px;flex-wrap:wrap}
+.toolbar .hint{color:#567b77}
+.status-msg{color:#087e73}
+.btn{background:#0d887d;border-radius:8px;padding:10px 16px}
+.btn:hover{background:#076e65}
+.btn.secondary{background:#e4f3ef;color:#0c756c}
+.btn.secondary:hover{background:#d1e9e3}
+.sep-workspace .header{background:#fff;padding:28px 38px 6px}
+.sep-workspace .header h1{font:700 29px Georgia,serif;color:#112328;letter-spacing:-.35px}
+.sep-workspace .header:before{content:"SEPTEMBER 2026 · ADMISSIONS PERFORMANCE";display:block;color:#0e8277;letter-spacing:2px;font-size:12px;font-weight:800;margin-bottom:10px}
+.sep-workspace .subbar{background:#fff;color:#607d79;border-bottom:1px solid #d8ebe7;padding:9px 38px 17px;font-size:11px}
+.sep-workspace .subbar input{background:#f7fbfa;color:#145e58;border:1px solid #c9e2dd;border-radius:6px;padding:5px}
+.sep-workspace .content{padding:20px 36px 26px}
+.sep-workspace .cards{border-collapse:separate;border-spacing:8px 0;margin:0 -8px 22px;width:calc(100% + 16px)}
+.sep-workspace .cards td{background:#f6faf9;border:1px solid #d6e7e3;border-radius:12px;padding:17px 9px}
+.sep-workspace .card-label{font-size:10px;color:#68817e;letter-spacing:.6px}
+.sep-workspace .card-value{font-size:27px;color:#107e75;margin:7px 0}
+.sep-workspace .card-value.red{color:#bf5a2b}
+.sep-workspace .card-value.green{color:#0e8878}
+.sep-workspace .card-value.amber{color:#a46c1c}
+.sep-workspace .card-sub{font-size:10px;color:#718681}
+.sep-workspace .section-title{background:#fff;color:#0f776e;border-bottom:2px solid #cfe5e0;padding:12px 2px 9px;font-size:13px;letter-spacing:.4px}
+.sep-workspace .row2{border-spacing:0 8px;margin-bottom:14px}
+.sep-workspace .chart-box{border:1px solid #dce8e6;border-radius:12px;padding:15px;background:#fff}
+.sep-workspace .chart-title{font-size:12px;color:#137e73}
+.sep-workspace .bar-label{font-size:10px;margin-bottom:4px}
+.sep-workspace .bar-pct{font-size:9px}
+.sep-workspace .legend{font-size:9px}
+.sep-workspace table.partner th,.sep-workspace table.detail th{background:#eff5f3;color:#657c7a;border-color:#d6e7e3;text-transform:uppercase;letter-spacing:.2px}
+.sep-workspace table.partner th{font-size:10px;padding:11px 6px}
+.sep-workspace table.partner td{font-size:10px;padding:11px 6px;border-color:#e2eae9}
+.sep-workspace table.partner tr.total td{background:#e5f2ee;color:#0b635a}
+.sep-workspace table.detail th{font-size:8px;padding:9px 3px;line-height:1.25}
+.sep-workspace table.detail td{font-size:9px;padding:7px 3px;border-color:#e2eae9}
+.sep-workspace table.detail tr.subtotal td{background:#e5f2ee;color:#0b635a}
+.sep-workspace table.detail tr.grand td{background:#0e8176;color:#fff}
+.sep-workspace .partner-band td{background:#d9eee9;color:#0a7167;font-size:10px;padding:9px 8px}
+.sep-workspace table.detail input,.sep-workspace table.detail select{background:#f9fcfb;border:1px solid #c9e1dc;border-radius:4px;font-size:9px;padding:5px 2px}
+.sep-workspace table.detail td.editable{background:#fff}
+.sep-workspace .footer{font-size:9px;line-height:1.5;color:#728581}
+.sep-workspace .footer-meta{font-size:10px;color:#4d746e;padding:12px 0}
+.sep-workspace .footer-meta input{font-size:10px}
+.sep-workspace .status.green{background:#e0f5ee;color:#087d68}
+.sep-workspace .status.red{background:#fff0e7;color:#b95a25}
+@media print{body{background:#fff}.sheet{border:0;box-shadow:none;width:auto}.sep-workspace .cards td{padding:8px 4px}.sep-workspace .card-value{font-size:17px}.sep-workspace .header{padding:10px}.sep-workspace .content{padding:8px}}
 </style>
 </head>
 <body>
