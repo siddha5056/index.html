@@ -873,10 +873,20 @@ function applyFormData(data){
   recalcAll();
 }
 
+let januarySavedBaseline = null;
 async function saveChanges(){
   try {
-    const data = activeIntake==='jan' ? collectJanuaryData() : collectFormData();
-
+    const isJan = activeIntake === 'jan';
+    if (isJan && januarySavedBaseline === null) {
+      flashMsg('Please load the shared January data before saving. Your entries have not been overwritten.');
+      return;
+    }
+    const current = isJan ? collectJanuaryData() : collectFormData();
+    const data = isJan ? Object.fromEntries(Object.entries(current).filter(([k,v]) => String(januarySavedBaseline[k] ?? '0') !== String(v))) : current;
+    if (isJan && Object.keys(data).length === 0) {
+      flashMsg('No new January changes to save.');
+      return;
+    }
     flashMsg('Saving shared KPI data...');
 
     const response = await fetch('/api/kpi', {
@@ -887,7 +897,8 @@ async function saveChanges(){
       body: JSON.stringify({
         intake: activeIntake,
         data: data,
-        updatedBy: data.preparedBy || 'Admissions Team'
+        patch: isJan,
+        updatedBy: current.preparedBy || 'Admissions Team'
       })
     });
 
@@ -897,6 +908,7 @@ async function saveChanges(){
       throw new Error(result.error || 'Unable to save KPI data');
     }
 
+    if (isJan) januarySavedBaseline = { ...januarySavedBaseline, ...data };
     flashMsg('✓ KPI data saved successfully for the whole team.');
 
   } catch (err) {
@@ -922,7 +934,10 @@ async function loadSaved(silent){
     }
 
     if (result.data) {
-      if(activeIntake==='jan')applyJanuaryData(result.data);else applyFormData(result.data);
+      if(activeIntake==='jan'){
+        applyJanuaryData(result.data);
+        januarySavedBaseline = { ...collectJanuaryData() };
+      }else applyFormData(result.data);
 
       if (!silent) {
         let message = '✓ Latest shared KPI data loaded.';
@@ -937,6 +952,7 @@ async function loadSaved(silent){
       return true;
     }
 
+    if (activeIntake === 'jan') januarySavedBaseline = { ...collectJanuaryData() };
     if (!silent) {
       flashMsg('No shared KPI data has been saved yet.');
     }
