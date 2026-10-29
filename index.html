@@ -580,7 +580,7 @@ function switchIntake(value){
  document.getElementById('janSheet').classList.toggle('active',value==='jan');
  document.getElementById('intakeSep').classList.toggle('active',value==='sep');
  document.getElementById('intakeJan').classList.toggle('active',value==='jan');
- document.querySelector('.toolbar .hint').textContent=value==='sep'?'Edit any white/yellow field below — everything recalculates live.':'January 2027 · Enter confirmed numbers under S1–S6 and save to the shared dashboard.';
+ (document.querySelector('.toolbar .hint') || {textContent:''}).textContent=value==='sep'?'Edit any white/yellow field below — everything recalculates live.':'January 2027 · Enter confirmed numbers under S1–S6 and save to the shared dashboard.';
  document.title=value==='sep'?'Partner KPI · September 2026':'Partner KPI · January 2027';
 }
 function buildJanuary(){
