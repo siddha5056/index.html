@@ -586,7 +586,7 @@ function switchIntake(value){
 function buildJanuary(){
 const tbody=document.getElementById('janCourseRows');
 tbody.innerHTML=JAN_COURSES.map((c,i)=>'<tr><td class="partner-name">'+c[0]+'<span class="course-note">'+c[1]+' · '+c[4]+'</span></td>'+Array.from({length:6},(_,j)=>'<td><input min="0" type="number" id="jan_'+i+'_s'+(j+1)+'" value="0"></td>').join('')+'<td id="jan_'+i+'_confirmed">0</td><td>'+c[2]+'</td><td>+'+(c[3]-c[2])+'</td><td><b>'+c[3]+'</b></td><td id="jan_'+i+'_fill">0%</td><td id="jan_'+i+'_gap">'+c[3]+'</td></tr>').join('');
-document.getElementById('janSheet').addEventListener('input',e=>{if(e.target && e.target.id && e.target.id.startsWith('jan_')){januaryDirty.add(e.target.id);janStatus('Unsaved changes — click Save changes to share these figures.','#a45c00');}recalcJanuary();});
+document.getElementById('janSheet').addEventListener('input',e=>{if(e.target && e.target.id && e.target.id.startsWith('jan_')){januaryDirty.add(e.target.id);janStatus('Unsaved changes — saving automatically...','#a45c00');clearTimeout(janAutoTimer);janAutoTimer=setTimeout(()=>{if(activeIntake==='jan')saveChanges();},1200);}recalcJanuary();});
 recalcJanuary();
 }
 function recalcJanuary(){
@@ -875,51 +875,48 @@ function applyFormData(data){
 
 let januarySavedBaseline = null;
 const januaryDirty = new Set();
-function janStatus(message,color){const el=document.getElementById('janSaveStatus');if(el){el.textContent=message;el.style.color=color||'#0b746c';}}
+let janAutoTimer = null;
+let janSaveInProgress = false;
+function janStatus(message,color){
+  const el=document.getElementById('janSaveStatus');
+  if(el){el.textContent=message;el.style.color=color||'#0b746c';}
+}
 async function saveChanges(){
-  try {
-    const isJan = activeIntake === 'jan';
-    const current = isJan ? collectJanuaryData() : collectFormData();
-    const data = isJan ? Object.fromEntries(Object.entries(current).filter(([k,v]) => januaryDirty.has(k) || (januarySavedBaseline !== null && String(januarySavedBaseline[k] ?? '0') !== String(v)))) : current;
-    if (isJan && Object.keys(data).length === 0) {
-      flashMsg('No new January changes to save.');
-      janStatus('No unsaved changes. The January figures already match this browser’s last saved or loaded values.');
-      return;
+  if(activeIntake==='jan'){
+    clearTimeout(janAutoTimer);
+    if(janSaveInProgress){janStatus('A save is in progress. Your latest changes will be saved next.','#a45c00');return;}
+    const current=collectJanuaryData();
+    const changed=Object.fromEntries(Object.entries(current).filter(([k,v])=>januaryDirty.has(k)||(januarySavedBaseline!==null&&String(januarySavedBaseline[k]??'0')!==String(v))));
+    if(!Object.keys(changed).length){janStatus('All January changes already saved.');return;}
+    janSaveInProgress=true;
+    janStatus('Saving '+Object.keys(changed).length+' January field(s) to the shared database...');
+    try{
+      const response=await fetch('/api/kpi',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({intake:'jan',patch:true,data:changed,updatedBy:'Admissions Team'})});
+      const result=await response.json();
+      if(!response.ok||result.ok!==true)throw new Error(result.error||'Database did not confirm saving');
+      if(!result.data||Object.entries(changed).some(([k,v])=>String(result.data[k])!==String(v)))throw new Error('Saved values could not be verified in the database response');
+      januarySavedBaseline={...(januarySavedBaseline||{}),...result.data};
+      Object.entries(changed).forEach(([k,v])=>{if(String(document.getElementById(k)?.value)===String(v))januaryDirty.delete(k);});
+      janStatus('✓ Verified: '+Object.keys(changed).length+' January field(s) saved in the shared database.');
+      flashMsg('✓ January changes saved and verified.');
+    }catch(err){
+      janStatus('SAVE FAILED — '+err.message+'. Keep this page open and retry.','#b42318');
+      flashMsg('January save failed: '+err.message,12000);
+      console.error('January save failure',err);
+    }finally{
+      janSaveInProgress=false;
+      if(januaryDirty.size){clearTimeout(janAutoTimer);janAutoTimer=setTimeout(()=>{if(activeIntake==='jan')saveChanges();},1400);}
     }
-    flashMsg('Saving shared KPI data...');
-    if(isJan)janStatus('Saving January changes to the shared database...');
-
-    const response = await fetch('/api/kpi', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify({
-        intake: activeIntake,
-        data: data,
-        patch: isJan,
-        updatedBy: current.preparedBy || 'Admissions Team'
-      })
-    });
-
-    const result = await response.json();
-
-    if (!response.ok) {
-      throw new Error(result.error || 'Unable to save KPI data');
-    }
-
-    if (isJan) {
-      januarySavedBaseline = { ...(januarySavedBaseline || {}), ...data };
-      Object.entries(data).forEach(([k,v])=>{if(String(document.getElementById(k)?.value)===String(v))januaryDirty.delete(k);});
-      janStatus('✓ January figures saved to the shared database. Other devices can load them now.');
-    }
-    flashMsg('✓ KPI data saved successfully for the whole team.');
-
-  } catch (err) {
-    flashMsg('Save failed: ' + err.message);
-    if(activeIntake==='jan')janStatus('Save failed: '+err.message,'#b42318');
-    console.error(err);
+    return;
   }
+  try{
+    const data=collectFormData();
+    flashMsg('Saving shared KPI data...');
+    const response=await fetch('/api/kpi',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({intake:'sep',data,updatedBy:data.preparedBy||'Admissions Team'})});
+    const result=await response.json();
+    if(!response.ok||result.ok!==true)throw new Error(result.error||'Unable to save KPI data');
+    flashMsg('✓ KPI data saved successfully for the whole team.');
+  }catch(err){flashMsg('Save failed: '+err.message,12000);console.error(err);}
 }
 
 async function loadSaved(silent){
