@@ -50,6 +50,7 @@ module.exports = async function handler(req, res) {
         });
       }
 
+      const isJanuaryPatch = intake === 'jan' && body.patch === true;
       const data = JSON.stringify(body.data);
 
       const updatedBy = String(
@@ -57,6 +58,21 @@ module.exports = async function handler(req, res) {
         body.data.preparedBy ||
         'Admissions Team'
       ).slice(0, 120);
+
+      if (isJanuaryPatch) {
+        // Merge only the January fields edited by this browser. The JSONB
+        // concatenation is atomic, so simultaneous edits to other fields survive.
+        const rows = await sql`
+          INSERT INTO kpi_dashboard_state (id, data, updated_at, updated_by)
+          VALUES (${rowId}, ${data}::jsonb, NOW(), ${updatedBy})
+          ON CONFLICT (id) DO UPDATE SET
+            data = kpi_dashboard_state.data || EXCLUDED.data,
+            updated_at = NOW(),
+            updated_by = EXCLUDED.updated_by
+          RETURNING updated_at, updated_by
+        `;
+        return res.status(200).json({ ok: true, ...rows[0] });
+      }
 
       const rows = await sql`
         INSERT INTO kpi_dashboard_state
