@@ -69,7 +69,7 @@ module.exports = async function handler(req, res) {
             data = kpi_dashboard_state.data || EXCLUDED.data,
             updated_at = NOW(),
             updated_by = EXCLUDED.updated_by
-          RETURNING updated_at, updated_by
+          RETURNING updated_at, updated_by, data
         `;
         return res.status(200).json({ ok: true, ...rows[0] });
       }
