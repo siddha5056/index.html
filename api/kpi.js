@@ -1,7 +1,16 @@
 const { neon } = require('@neondatabase/serverless');
+const { createHash, timingSafeEqual } = require('crypto');
+const EDIT_PASS_HASH = createHash('sha256').update('001').digest();
+function validEditKey(value) {const hash=createHash('sha256').update(String(value||'')).digest();return timingSafeEqual(hash,EDIT_PASS_HASH);}
 
 module.exports = async function handler(req, res) {
   try {
+    if (req.method === 'POST' && req.body?.action === 'verify') {
+      return res.status(validEditKey(req.body?.editKey) ? 200 : 403).json({ok:validEditKey(req.body?.editKey)});
+    }
+    if (req.method === 'POST' && !validEditKey(req.body?.editKey)) {
+      return res.status(403).json({error:'Edit access required. Unlock with the correct passkey.'});
+    }
     if (!process.env.SOCKPI_DATABASE_URL) {
       return res.status(500).json({
         error: 'Database is not configured'
